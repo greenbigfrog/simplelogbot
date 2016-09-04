@@ -9,6 +9,8 @@ Dotenv.load if ENV['TOKEN'].nil?
 require 'configatron'
 require_relative 'config.rb'
 
+require 'json'
+
 require 'discordrb'
 
 bot = Discordrb::Commands::CommandBot.new token: ENV['TOKEN'], application_id: ENV['APPID'], prefix: configatron.prefix, advanced_functionality: false, debug: true #, log_mode: :debug
@@ -23,10 +25,21 @@ bot.command(:stats, description: 'shows a few stats about the bot') do |event|
   "Currently I'm on **#{event.bot.servers.size} servers** with a total user count of **#{members} users** in **#{event.bot.servers.collect { |x, y| y.channels.size }.inject(0, &:+)} channels**!"
 end
 
+# Method to create sth
+def create(url, data)
+  RestClient.post url, {"api_token" => "#{ENV['APITOKEN']}" + data}.to_json, :content_type => :json
+end
+
+# Method to update sth
+def update(url, data)
+  RestClient.put url, {"api_token" => "#{ENV['APITOKEN']}" + data}.to_json, :content_type => :json
+end
+
 # Message Events
 # Fired on message creation
 bot.message do |event|
   puts "I saw that!"
+  create("#{ENV['APIBASE']}/servers/channels/messages", {"message" => { 'id' => "#{event.message.id}", 'content' => "#{event.message.content}"}}.to_json)
 end
 
 # Fired when a message gets edited
