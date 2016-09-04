@@ -41,7 +41,7 @@ end
 # Fired on message creation
 bot.message do |event|
   puts "I saw that!"
-  create("/messages", {"api_token" => "#{ENV['APITOKEN']}", "message" => { 'message_id' => "#{event.message.id}", 'content' => "#{event.message.content}", 'status' => 'active'}}.to_json)
+  create("/messages", {"api_token" => "#{ENV['APITOKEN']}", "message" => { 'message_id' => "#{event.message.id}", 'content' => "#{event.message.content}", 'status' => 'active', 'sent_at' => "#{event.message.timestamp}"}}.to_json)
 end
 
 # Fired when a message gets edited
