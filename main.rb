@@ -25,6 +25,8 @@ bot.command(:stats, description: 'shows a few stats about the bot') do |event|
   "Currently I'm on **#{event.bot.servers.size} servers** with a total user count of **#{members} users** in **#{event.bot.servers.collect { |x, y| y.channels.size }.inject(0, &:+)} channels**!"
 end
 
+
+
 # Method to create sth
 def create(url, data)
   RestClient.post ENV['APIBASE']+url, data, :content_type => :json
@@ -39,7 +41,7 @@ end
 # Fired on message creation
 bot.message do |event|
   puts "I saw that!"
-  create("/servers/channels/messages", {"api_token" => "#{ENV['APITOKEN']}", "message" => { 'id' => "#{event.message.id}", 'content' => "#{event.message.content}"}}.to_json)
+  create("/messages", {"api_token" => "#{ENV['APITOKEN']}", "message" => { 'id' => "#{event.message.id}", 'content' => "#{event.message.content}", 'status' => 'active'}}.to_json)
 end
 
 # Fired when a message gets edited
@@ -86,7 +88,12 @@ end
 # Fired when a Server gets deleted (Bot gets removed)
 bot.server_delete do |event|
   puts "Server got deleted"
-  update("/servers", {"api_token" => "#{ENV['APITOKEN']}", "server" => { "server_id" => "#{event.server.id}", "name" => "#{event.server.name}", "owner_id" => "#{event.server.owner.id}", "membercount" => "#{event.server.members.size}", "icon_id" => "#{event.server.icon_id}", "status" => "deleted"}}.to_json)
+  missingserver = bot.servers.clone.flatten.to_a - @cachedservers.to_a
+  update("/servers", {"api_token" => "#{ENV['APITOKEN']}", "server" => { "server_id" => "#{missingserver.first}", "status" => "deleted"}}.to_json)
+end
+
+bot.server_create do |event|
+  @cachedservers = bot.servers.clone
 end
 
 # Member events
