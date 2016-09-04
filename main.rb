@@ -96,6 +96,10 @@ bot.server_create do |event|
   @cachedservers = bot.servers.clone
 end
 
+bot.ready do |event|
+  @cachedservers = bot.servers.clone
+end
+
 # Member events
 # Fired when a User joins a Server
 bot.member_join do |event|
