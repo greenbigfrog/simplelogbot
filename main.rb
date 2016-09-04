@@ -16,7 +16,7 @@ require 'discordrb'
 bot = Discordrb::Commands::CommandBot.new token: ENV['TOKEN'], application_id: ENV['APPID'], prefix: configatron.prefix, advanced_functionality: false, debug: true #, log_mode: :debug
 
 bot.command(:invite, description: 'Add the bot to your server') do |event|
-  "You can add this bot to your server. Just be aware that it logs ALL messages it can get hold off. Also who is able to view them is subject to change now and then. Right now this all is still BETA!!! #{bot.invite_url.to_s}&permissions=68608"
+  "You can add this bot to your server. Just be aware that it logs ALL messages it can get hold off. Also who is able to view them is subject to change now and then. Right now this all is still BETA!!! #{bot.invite_url.to_s}"
 end
 
 bot.command(:stats, description: 'shows a few stats about the bot') do |event|
@@ -27,19 +27,19 @@ end
 
 # Method to create sth
 def create(url, data)
-  RestClient.post url, {"api_token" => "#{ENV['APITOKEN']}" + data}.to_json, :content_type => :json
+  RestClient.post ENV['APIBASE']+url, data, :content_type => :json
 end
 
 # Method to update sth
 def update(url, data)
-  RestClient.put url, {"api_token" => "#{ENV['APITOKEN']}" + data}.to_json, :content_type => :json
+  RestClient.put url, data, :content_type => :json
 end
 
 # Message Events
 # Fired on message creation
 bot.message do |event|
   puts "I saw that!"
-  create("#{ENV['APIBASE']}/servers/channels/messages", {"message" => { 'id' => "#{event.message.id}", 'content' => "#{event.message.content}"}}.to_json)
+  create("/servers/channels/messages", {"api_token" => "#{ENV['APITOKEN']}", "message" => { 'id' => "#{event.message.id}", 'content' => "#{event.message.content}"}}.to_json)
 end
 
 # Fired when a message gets edited
@@ -74,16 +74,19 @@ end
 bot.server_create do |event|
   puts "Server got created"
   event.server.owner.pm "Someone added me to this server. All messages I can view I'm logging to INSERT HERE (TODO)"
+  create("/servers", {"api_token" => "#{ENV['APITOKEN']}", "server" => { "server_id" => "#{event.server.id}", "name" => "#{event.server.name}", "owner_id" => "#{event.server.owner.id}", "membercount" => "#{event.server.members.size}", "icon_id" => "#{event.server.icon_id}", "status" => "active"}}.to_json)
 end
 
 # Fired when a Server gets updated
 bot.server_update do |event|
   puts "Server got updated"
+  update("/servers", {"api_token" => "#{ENV['APITOKEN']}", "server" => { "server_id" => "#{event.server.id}", "name" => "#{event.server.name}", "owner_id" => "#{event.server.owner.id}", "membercount" => "#{event.server.members.size}", "icon_id" => "#{event.server.icon_id}", "status" => "active"}}.to_json)
 end
 
 # Fired when a Server gets deleted (Bot gets removed)
 bot.server_delete do |event|
   puts "Server got deleted"
+  update("/servers", {"api_token" => "#{ENV['APITOKEN']}", "server" => { "server_id" => "#{event.server.id}", "name" => "#{event.server.name}", "owner_id" => "#{event.server.owner.id}", "membercount" => "#{event.server.members.size}", "icon_id" => "#{event.server.icon_id}", "status" => "deleted"}}.to_json)
 end
 
 # Member events

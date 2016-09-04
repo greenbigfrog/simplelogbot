@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/meew0/discordrb.git
-  revision: a5e21a59b25550080fef115a07fc251003167395
+  revision: 227096cdf6719b34b391f90823af569673c12b0a
   specs:
     discordrb (2.1.3)
       activesupport
@@ -20,7 +20,7 @@ GEM
     coderay (1.1.1)
     concurrent-ruby (1.0.2)
     configatron (4.5.0)
-    domain_name (0.5.20160615)
+    domain_name (0.5.20160826)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.1.1)
     event_emitter (0.2.5)
