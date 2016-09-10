@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/meew0/discordrb.git
-  revision: 227096cdf6719b34b391f90823af569673c12b0a
+  revision: 3ebc818df117783dc63ebfd0bf9b0c6deb13d9fc
   specs:
     discordrb (2.1.3)
       activesupport
